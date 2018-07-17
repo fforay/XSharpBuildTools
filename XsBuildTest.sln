@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XsBuildApp", "XsBuildApp\Xs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XsTestApp", "XsTestApp\XsTestApp.csproj", "{2D6D8225-7A0E-48C2-BAAA-8339A3849468}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XsPullStats", "XsPullStats\XsPullStats.csproj", "{9CF37A64-565A-40DF-AC28-AD8BB124F3EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2D6D8225-7A0E-48C2-BAAA-8339A3849468}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D6D8225-7A0E-48C2-BAAA-8339A3849468}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D6D8225-7A0E-48C2-BAAA-8339A3849468}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CF37A64-565A-40DF-AC28-AD8BB124F3EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CF37A64-565A-40DF-AC28-AD8BB124F3EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CF37A64-565A-40DF-AC28-AD8BB124F3EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CF37A64-565A-40DF-AC28-AD8BB124F3EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
