@@ -19,7 +19,7 @@ namespace XsPullStats
             settings = reader.ReadToEnd();
             reader.Close();
             //
-            this.mdGenerator = JsonConvert.DeserializeObject<MdStatsEngine>(settings);
+            this.mdGenerator = new MdStatsEngine(JsonConvert.DeserializeObject<GitSettings>(settings));
         }
 
         public void Start()

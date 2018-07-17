@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="FileData.cs" />
+    <Compile Include="GitSettings.cs" />
     <Compile Include="MdStatsEngine.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

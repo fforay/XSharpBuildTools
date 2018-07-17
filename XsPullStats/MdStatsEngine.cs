@@ -13,18 +13,13 @@ namespace XsPullStats
     public class MdStatsEngine
     {
         //Identifiants du compte GitHub qui réalisera l'opération de Pull
-        public String Username { get; set; }
-        public String Password { get; set; }
-        public String repoPath { get; set; }
-        public String emailSignature { get; set; }
+        private GitSettings gitSettings;
+
         const String MDNAME = "Git_Stats";
 
-        public MdStatsEngine(String usr, String psw, String path, String emailAddress)
+        public MdStatsEngine(GitSettings gitSettings)
         {
-            this.Username = usr;
-            this.Password = psw;
-            this.repoPath = path;
-            this.emailSignature = emailAddress;
+            this.gitSettings = gitSettings;
         }
 
         public void Create()
@@ -36,17 +31,17 @@ namespace XsPullStats
                 (url, usernameFromUrl, types) =>
                     new UsernamePasswordCredentials()
                     {
-                        Username = this.Username,
-                        Password = this.Password
+                        Username = this.gitSettings.Username,
+                        Password = this.gitSettings.Password
                     });
 
             //Emplacement absolu du repo local
-            var repo = new LibGit2Sharp.Repository(this.repoPath);
+            var repo = new LibGit2Sharp.Repository(this.gitSettings.repoPath);
 
             //Realisation de l'action de Pull avec le repo designé avant, l'Username du programme, et l'adresse mail associée
             MergeResult mergeResult = Commands.Pull(
                 repo,
-                new Signature(Username, this.emailSignature, DateTimeOffset.Now),
+                new Signature(gitSettings.Username, this.gitSettings.emailSignature, DateTimeOffset.Now),
                 options
             );
 
@@ -123,7 +118,7 @@ namespace XsPullStats
         {
             String dayDate = (DateTime.Now.Day.ToString()) + "-" + (DateTime.Now.Month.ToString()) + "-" + (DateTime.Now.Year.ToString());
 
-            FileStream md = new FileStream(this.repoPath + MdStatsEngine.MDNAME + "_" + dayDate + ".md", FileMode.OpenOrCreate);
+            FileStream md = new FileStream(this.gitSettings.repoPath + MdStatsEngine.MDNAME + "_" + dayDate + ".md", FileMode.OpenOrCreate);
             StreamWriter sr = new StreamWriter(md);
             sr.WriteLine("");
             sr.WriteLine("");
