@@ -20,5 +20,9 @@ namespace XsTestApp
 
         public bool NewMDFile { get; set; }
 
+        public string Passed { get; set; }
+
+        public string Failed { get; set; }
+
     }
 }

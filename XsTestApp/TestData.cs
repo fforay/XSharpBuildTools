@@ -1,5 +1,11 @@
 ﻿namespace XsTestApp
 {
+    public class TestData_Link
+    {
+        public string TestName { get; internal set; }
+        public string Result { get; internal set; }
+    }
+
     public class TestData
     {
         public string TestName { get; internal set; }

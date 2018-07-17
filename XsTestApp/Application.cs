@@ -134,14 +134,14 @@ namespace XsTestApp
         private void generateMD(string testAssembly)
         {
             // Create a list of result
-            List<TestData> testData = new List<TestData>();
+            List<TestData_Link> testData = new List<TestData_Link>();
             foreach (var testOk in passed)
             {
-                testData.Add(new TestData() { TestName = testOk, Result = true });
+                testData.Add(new TestData_Link() { TestName = testOk, Result = "![Passed](" + this.settingEnv.Passed + ")" });
             }
             foreach (var testBad in failed)
             {
-                testData.Add(new TestData() { TestName = testBad, Result = false });
+                testData.Add(new TestData_Link() { TestName = testBad, Result = "![Failed]("+ this.settingEnv.Failed + ")" });
             }
             // Sort by TestName
             testData.Sort((test1, test2) => test1.TestName.CompareTo(test2.TestName));
