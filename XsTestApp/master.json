@@ -2,5 +2,6 @@
   "Path": "C:\\XSharp\\DevRT",
   "Assemblies": [ "Binaries\\Debug\\XSharp.Core.Tests.dll", "Binaries\\Debug\\XSharp.Rdd.Tests.dll" ],
   "Console": true,
-  "MDFile": "C:\\XSharp\\DevRT\\TestResults.md"
+  "MDFile": "C:\\XSharp\\DevRT\\TestResults.md",
+  "Vagrant": true
 }
