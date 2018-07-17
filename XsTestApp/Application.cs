@@ -38,6 +38,13 @@ namespace XsTestApp
 
         public void Start()
         {
+            if (this.settingEnv.NewMDFile)
+            {
+                if (File.Exists(this.settingEnv.MDFile))
+                {
+                    File.Delete(this.settingEnv.MDFile);
+                }
+            }
             //
             foreach (String assembly in settingEnv.Assemblies)
             {
@@ -63,11 +70,12 @@ namespace XsTestApp
                         finished.WaitOne();
                         // Now generate Result file
                         if (settingEnv.Vagrant)
-                            this.generateMD_Vagrant(testAssembly);
+                            this.build_Vagrant(testAssembly);
                         else
                             this.generateMD(testAssembly);
                         // ....
                     }
+
                 }
                 else
                 {
@@ -79,7 +87,8 @@ namespace XsTestApp
                     }
                 }
             }
-
+            if (settingEnv.Vagrant)
+                this.generateMD_Vagrant();
             finished.Dispose();
         }
 
@@ -174,12 +183,11 @@ namespace XsTestApp
 
         }
 
-        private bool headerAdded = false;
+        private List<TestData_Vagrant> testData_Vagrant = new List<TestData_Vagrant>();
 
-        private void generateMD_Vagrant(string testAssembly)
+        private void build_Vagrant(string testAssembly)
         {
             // Create a list of result
-            List<TestData_Vagrant> testData_Vagrant = new List<TestData_Vagrant>();
             TestData_Vagrant vagrant = new TestData_Vagrant();
             vagrant.TestAssembly = Path.GetFileName(testAssembly);
             vagrant.Result = "";
@@ -203,26 +211,27 @@ namespace XsTestApp
                 else
                     vagrant.Result += "F";
             }
+            //
+            testData_Vagrant.Add(vagrant);
+        }
 
+        private void generateMD_Vagrant()
+        {
             // Now, open/create the file
             FileStream md = new FileStream(this.settingEnv.MDFile, FileMode.OpenOrCreate);
             // and write
             StreamWriter sr = new StreamWriter(md);
             // Move to the end of File, in order to add results
             md.Seek(0, SeekOrigin.End);
-            if (!headerAdded)
-            {
-                sr.WriteLine("");
-                sr.WriteLine("");
-                sr.WriteLine("");
-                String[] hourWithMili = DateTime.Now.TimeOfDay.ToString().Split('.');
-                // Set the Time as a Paragraph Header
-                String header = hourWithMili[0];
-                var headerMD = header.ToMarkdownHeader();
-                sr.WriteLine(headerMD);
-            }
-            //
-            testData_Vagrant.Add(vagrant);
+            sr.WriteLine("");
+            sr.WriteLine("");
+            sr.WriteLine("");
+            String[] hourWithMili = DateTime.Now.TimeOfDay.ToString().Split('.');
+            // Set the Time as a Paragraph Header
+            String header = hourWithMili[0];
+            var headerMD = header.ToMarkdownHeader();
+            sr.WriteLine(headerMD);
+
             Table tbl = testData_Vagrant.ToMarkdownTable();
             // Hack to remove the first five spaces on each line (or GitHub wrongly shows the table)
             StringReader read = new StringReader(tbl.ToMarkdown());

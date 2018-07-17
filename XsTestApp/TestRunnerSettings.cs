@@ -18,5 +18,7 @@ namespace XsTestApp
 
         public bool Vagrant { get; set; }
 
+        public bool NewMDFile { get; set; }
+
     }
 }
