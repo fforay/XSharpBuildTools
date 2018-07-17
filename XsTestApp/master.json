@@ -1,0 +1,4 @@
+{
+  "Path": "C:\\XSharp\\Dev\\XSharp",
+  "Assemblies": [ "src\\dev\\bin\\test.dll", "anotherTest.dll" ]
+}
