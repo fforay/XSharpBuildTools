@@ -8,10 +8,13 @@ namespace XsTestApp
 {
     class TestAppSettings
     {
+        public bool Console { get; set; }
 
         public string Path { get; set; }
 
         public List<String> Assemblies { get; set; }
+
+        public string MDFile { get; set; }
 
     }
 }

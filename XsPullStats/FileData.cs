@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace XsPullStats
 {
+    /// <summary>
+    /// Information definition for each file
+    /// </summary>
     public class FileData
     {
         public string Path { get; internal set; }

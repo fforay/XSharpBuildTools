@@ -12,6 +12,9 @@ namespace XsBuildApp
         // Var,Value;Var,Value
         public string Env { get; set; }
 
+        /// <summary>
+        /// Dictionnary of Environnement Variables and their value to Set before running the Build
+        /// </summary>
         public Dictionary<string, string> EnvVars
         {
             get
@@ -27,6 +30,9 @@ namespace XsBuildApp
 
         public string Properties { get; set; }
 
+        /// <summary>
+        /// Dictionnary of Build Property with their values to set before running the Build
+        /// </summary>
         public Dictionary<string, string> Props
         {
             get
@@ -40,7 +46,15 @@ namespace XsBuildApp
             }
         }
 
+        /// <summary>
+        /// The FullPath Solution file to build
+        /// </summary>
         public string Project { get; set; }
+
+        /// <summary>
+        /// Flag indicating if we must produce some Console informations
+        /// </summary>
+        public bool Console { get; set; }
 
         private Dictionary<string, string>  DecodeDictionnary( string value )
         {

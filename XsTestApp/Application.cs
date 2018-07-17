@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using MarkdownLog;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -55,28 +56,35 @@ namespace XsTestApp
                         runner.OnTestFailed = OnTestFailed;
                         runner.OnTestPassed = OnTestPassed;
 
-                        Console.WriteLine("Running...");
+                        if ( settingEnv.Console )
+                            Console.WriteLine("Running...");
                         runner.Start();
 
                         finished.WaitOne();
                         // Now generate Result file
+                        this.generateMD( testAssembly );
                         // ....
                     }
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Assembly not Found : {0}", testAssembly);
-                    Console.ResetColor();
+                    if (settingEnv.Console)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Assembly not Found : {0}", testAssembly);
+                        Console.ResetColor();
+                    }
                 }
             }
 
             finished.Dispose();
         }
 
+
         void OnTestPassed(TestPassedInfo info)
         {
-            lock (consoleLock)
+            if (settingEnv.Console)
+                lock (consoleLock)
                 Console.WriteLine("[Passed] {0} / {1}", info.TestDisplayName, info.MethodName);
             //
             passed.Add(info.TestDisplayName);
@@ -84,7 +92,8 @@ namespace XsTestApp
 
         void OnExecutionComplete(ExecutionCompleteInfo info)
         {
-            lock (consoleLock)
+            if (settingEnv.Console)
+                lock (consoleLock)
                 Console.WriteLine($"Finished: {info.TotalTests} tests in {Math.Round(info.ExecutionTime, 3)}s ({info.TestsFailed} failed, {info.TestsSkipped} skipped)");
             //Raise Event
             finished.Set();
@@ -92,18 +101,74 @@ namespace XsTestApp
 
         void OnTestFailed(TestFailedInfo info)
         {
-            lock (consoleLock)
+            if (settingEnv.Console)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
+                lock (consoleLock)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
 
-                Console.WriteLine("[FAIL] {0}: {1}", info.TestDisplayName, info.ExceptionMessage);
-                if (info.ExceptionStackTrace != null)
-                    Console.WriteLine(info.ExceptionStackTrace);
+                    Console.WriteLine("[FAIL] {0}: {1}", info.TestDisplayName, info.ExceptionMessage);
+                    if (info.ExceptionStackTrace != null)
+                        Console.WriteLine(info.ExceptionStackTrace);
 
-                Console.ResetColor();
+                    Console.ResetColor();
+                }
             }
             //
             failed.Add(info.TestDisplayName);
+        }
+
+
+        private void generateMD( string testAssembly )
+        {
+            // Create a list of result
+            List<TestData> testData = new List<TestData>();
+            foreach( var testOk in passed )
+            {
+                testData.Add(new TestData() { TestName = testOk, Result = true });
+            }
+            foreach( var testBad in failed )
+            {
+                testData.Add(new TestData() { TestName = testBad, Result = false });
+            }
+            // Sort by TestName
+            testData.Sort((test1, test2) => test1.TestName.CompareTo(test2.TestName));
+            // Now, open/create the file
+            FileStream md = new FileStream( this.settingEnv.MDFile, FileMode.OpenOrCreate);
+            // and write
+            StreamWriter sr = new StreamWriter(md);
+            // Move to the end of File, in order to add results
+            md.Seek(0, SeekOrigin.End);
+            sr.WriteLine("");
+            sr.WriteLine("");
+            sr.WriteLine("");
+            String[] hourWithMili = DateTime.Now.TimeOfDay.ToString().Split('.');
+            // Set the Time as a Paragraph Header
+            String header = Path.GetFileName(testAssembly) + " " + hourWithMili[0];
+            var headerMD = header.ToMarkdownHeader();
+            sr.WriteLine(headerMD);
+            //
+            Table tbl = testData.ToMarkdownTable();
+            // Hack to remove the first five spaces on each line (or GitHub wrongly shows the table)
+            StringReader read = new StringReader( tbl.ToMarkdown());
+            do
+            {
+                String line = read.ReadLine();
+                if (line != null)
+                {
+                    if (line.Length >= 5)
+                        sr.WriteLine(line.Substring(5));
+                    else
+                        sr.WriteLine(line);
+                }
+                else
+                    break;
+            } while (true);
+            //
+            read.Close();
+            sr.Close();
+            md.Close();
+
         }
 
     }

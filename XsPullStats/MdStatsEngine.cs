@@ -120,16 +120,15 @@ namespace XsPullStats
 
             FileStream md = new FileStream(this.gitSettings.repoPath + MdStatsEngine.MDNAME + "_" + dayDate + ".md", FileMode.OpenOrCreate);
             StreamWriter sr = new StreamWriter(md);
+            //Deplacement à la fin du fichier pour ne pas écraser le contenu au cas où on écrit plusieurs fois par jour
+            md.Seek(0, SeekOrigin.End);
             sr.WriteLine("");
             sr.WriteLine("");
             sr.WriteLine("");
             String[] hourWithMili = DateTime.Now.TimeOfDay.ToString().Split('.');
             var hourOfTheDay = hourWithMili[0].ToMarkdownHeader();
             sr.WriteLine(hourOfTheDay);
-            //
-            //Deplacement à la fin du fichier pour ne pas écraser le contenu au cas où on écrit plusieurs fois par jour
-            md.Seek(0, SeekOrigin.End);
-            //
+            // Hack to remove the first five spaces on each line (or GitHub wrongly shows the table)
             StringReader read = new StringReader(maTable.ToMarkdown());
             do
             {

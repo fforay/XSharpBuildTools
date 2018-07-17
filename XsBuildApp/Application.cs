@@ -41,7 +41,7 @@ namespace XsBuildApp
             var globalProperty = this.settingEnv.Props;
             //
             string projectFileName = this.settingEnv.Project; //"C:\\XSharp\\Dev\\XSharp\\Master.sln";//<--- change here can be another VS type ex: .vcxproj
-            XSharpLogger Logger = new XSharpLogger();
+            XSharpLogger Logger = new XSharpLogger( );
             var projectCollection = new ProjectCollection();
             var buildParamters = new BuildParameters(projectCollection);
             buildParamters.Loggers = new List<Microsoft.Build.Framework.ILogger>() { Logger };
@@ -51,7 +51,8 @@ namespace XsBuildApp
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
-            Console.WriteLine("Build Started");
+            if (this.settingEnv.Console)
+                Console.WriteLine("Build Started");
 
             var buildResult = BuildManager.DefaultBuildManager.Build(buildParamters, buildRequest);
             if (buildResult.OverallResult == BuildResultCode.Failure)
@@ -67,32 +68,37 @@ namespace XsBuildApp
             string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
                 ts.Hours, ts.Minutes, ts.Seconds,
                 ts.Milliseconds / 10);
-            Console.WriteLine("RunTime " + elapsedTime);
+            if (this.settingEnv.Console)
+                Console.WriteLine("RunTime " + elapsedTime);
 
             //Console.WriteLine(Logger.GetLogString());    //display output ..
-            Console.WriteLine("Processed {0} Projects.", Logger.Projects.Count);
-            Console.WriteLine("{0} Projects with Errors.", Logger.Errors.Count);
-            foreach( var PrjWithErrors in Logger.Errors )
+            if (this.settingEnv.Console)
             {
-                Console.WriteLine("Project : " + PrjWithErrors.Key);
-                foreach( var Error in PrjWithErrors.Value )
+                Console.WriteLine("Processed {0} Projects.", Logger.Projects.Count);
+                Console.WriteLine("{0} Projects with Errors.", Logger.Errors.Count);
+                foreach (var PrjWithErrors in Logger.Errors)
                 {
-                    String[] errorInfo = Error.Split(',');
-                    Console.WriteLine("     Error : File {0}; Line {1}; Column {2}", errorInfo[0], errorInfo[1], errorInfo[2]);
+                    Console.WriteLine("Project : " + PrjWithErrors.Key);
+                    foreach (var Error in PrjWithErrors.Value)
+                    {
+                        String[] errorInfo = Error.Split(',');
+                        Console.WriteLine("     Error : File {0}; Line {1}; Column {2}", errorInfo[0], errorInfo[1], errorInfo[2]);
+                    }
+                }
+
+                Console.WriteLine("{0} Projects with Warnings.", Logger.Warnings.Count);
+                foreach (var PrjWithWarnings in Logger.Warnings)
+                {
+                    Console.WriteLine("Project : " + PrjWithWarnings.Key);
+                    foreach (var Error in PrjWithWarnings.Value)
+                    {
+                        String[] warningInfo = Error.Split(',');
+                        Console.WriteLine("     Warning : File {0}; Line {1}; Column {2}", warningInfo[0], warningInfo[1], warningInfo[2]);
+                    }
                 }
             }
-
-            Console.WriteLine("{0} Projects with Warnings.", Logger.Warnings.Count);
-            foreach (var PrjWithWarnings in Logger.Warnings)
-            {
-                Console.WriteLine("Project : " + PrjWithWarnings.Key);
-                foreach (var Error in PrjWithWarnings.Value)
-                {
-                    String[] warningInfo = Error.Split(',');
-                    Console.WriteLine("     Warning : File {0}; Line {1}; Column {2}", warningInfo[0], warningInfo[1], warningInfo[2]);
-                }
-            }
-
+            // Now, produce a MD file with the results
+            // ...
         }
     }
 }
