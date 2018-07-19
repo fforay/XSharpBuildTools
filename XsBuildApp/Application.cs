@@ -11,11 +11,16 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Diagnostics;
 
+using MarkdownLog;
+
 namespace XsBuildApp
 {
     class Application
     {
         BuildSettings settingEnv;
+        List<String> projects = new List<string>();
+        List<String> projectsWithErrors = new List<string>();
+        List<String> projectsWithWarnings = new List<string>();
 
         public Application( string jsonFile )
         {
@@ -37,8 +42,17 @@ namespace XsBuildApp
                 }
                 return;
             }
+            //
+            if (this.settingEnv.NewMDFile)
+            {
+                if (File.Exists(this.settingEnv.MDFile))
+                {
+                    File.Delete(this.settingEnv.MDFile);
+                }
+            }
+            //
             // Register the Env Variables
-            foreach( var keyValue in this.settingEnv.EnvVars)
+            foreach ( var keyValue in this.settingEnv.EnvVars)
             {
                 Environment.SetEnvironmentVariable( keyValue.Key, keyValue.Value, EnvironmentVariableTarget.Process);
             }
@@ -80,6 +94,15 @@ namespace XsBuildApp
                 Console.WriteLine("RunTime " + elapsedTime);
 
             //Console.WriteLine(Logger.GetLogString());    //display output ..
+            foreach (var PrjWithErrors in Logger.Errors)
+            {
+                this.projectsWithErrors.Add(PrjWithErrors.Key);
+            }
+            foreach (var PrjWithWarnings in Logger.Warnings)
+            {
+                this.projectsWithWarnings.Add(PrjWithWarnings.Key);
+            }
+            //
             if (this.settingEnv.Console)
             {
                 Console.WriteLine("Processed {0} Projects.", Logger.Projects.Count);
@@ -87,6 +110,7 @@ namespace XsBuildApp
                 foreach (var PrjWithErrors in Logger.Errors)
                 {
                     Console.WriteLine("Project : " + PrjWithErrors.Key);
+                    this.projectsWithErrors.Add(PrjWithErrors.Key);
                     foreach (var Error in PrjWithErrors.Value)
                     {
                         String[] errorInfo = Error.Split(',');
@@ -98,6 +122,7 @@ namespace XsBuildApp
                 foreach (var PrjWithWarnings in Logger.Warnings)
                 {
                     Console.WriteLine("Project : " + PrjWithWarnings.Key);
+                    this.projectsWithWarnings.Add(PrjWithWarnings.Key);
                     foreach (var Error in PrjWithWarnings.Value)
                     {
                         String[] warningInfo = Error.Split(',');
@@ -105,8 +130,73 @@ namespace XsBuildApp
                     }
                 }
             }
+            this.projects = Logger.Projects;
             // Now, produce a MD file with the results
             // ...
+            generateMD(this.settingEnv.Project);
+        }
+
+        private void generateMD(string project)
+        {
+            //Creating the list of (not)building project
+            List<String> buildingProjects = new List<String>();
+            List<String> notBuildingProjects = new List<String>();
+            foreach (var proj in this.projects)
+            {
+                if ( (!this.projectsWithErrors.Contains(proj)) || (this.settingEnv.WarningAsError && !this.projectsWithWarnings.Contains(proj)) )
+                    buildingProjects.Add(proj);
+                else
+                    notBuildingProjects.Add(proj);
+
+            }
+            // Create a list of result
+            List<BuildData> testData = new List<BuildData>();
+            foreach (var testOk in buildingProjects)
+            {
+                testData.Add(new BuildData() { ProjectName = testOk, Result = "![Success](" + this.settingEnv.Success+ ")" });
+            }
+            foreach (var testBad in notBuildingProjects)
+            {
+                testData.Add(new BuildData() { ProjectName = testBad, Result = "![Failure](" + this.settingEnv.Failure + ")" });
+            }
+            // Sort by TestName
+            testData.Sort((test1, test2) => test1.ProjectName.CompareTo(test2.ProjectName));
+            // Now, open/create the file
+            FileStream md = new FileStream(this.settingEnv.MDFile, FileMode.OpenOrCreate);
+            // and write
+            StreamWriter sr = new StreamWriter(md);
+            // Move to the end of File, in order to add results
+            md.Seek(0, SeekOrigin.End);
+            sr.WriteLine("");
+            sr.WriteLine("");
+            sr.WriteLine("");
+            String[] hourWithMili = DateTime.Now.TimeOfDay.ToString().Split('.');
+            // Set the Time as a Paragraph Header
+            String header = Path.GetFileName(project) + " " + hourWithMili[0];
+            var headerMD = header.ToMarkdownHeader();
+            sr.WriteLine(headerMD);
+            //
+            Table tbl = testData.ToMarkdownTable();
+            // Hack to remove the first five spaces on each line (or GitHub wrongly shows the table)
+            StringReader read = new StringReader(tbl.ToMarkdown());
+            do
+            {
+                String line = read.ReadLine();
+                if (line != null)
+                {
+                    if (line.Length >= 5)
+                        sr.WriteLine(line.Substring(5));
+                    else
+                        sr.WriteLine(line);
+                }
+                else
+                    break;
+            } while (true);
+            //
+            read.Close();
+            sr.Close();
+            md.Close();
+
         }
     }
 }

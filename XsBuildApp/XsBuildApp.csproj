@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MarkdownLog, Version=0.9.3.36, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MarkdownLog.0.9.3\lib\portable-net45+sl50+MonoAndroid10+MonoTouch10\MarkdownLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />
@@ -53,6 +57,7 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="BasicLogger.cs" />
+    <Compile Include="BuildData.cs" />
     <Compile Include="BuildSettings.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
