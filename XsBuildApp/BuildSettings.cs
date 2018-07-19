@@ -69,5 +69,15 @@ namespace XsBuildApp
             return dict;
         }
 
+        public string MDFile { get; set; }
+
+        public bool NewMDFile { get; set; }
+
+        public bool WarningAsError { get; set; }
+
+        public string Success { get; set; }
+
+        public string Failure { get; set; }
+
     }
 }

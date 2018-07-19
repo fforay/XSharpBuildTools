@@ -1,6 +1,11 @@
 {
-   "Env":"XSHARPDEV,",
-   "Project":"C:\\XSharp\\DevRT\\Runtime.sln",
+  "Env":"XSHARPDEV,",
+  "Project":"C:\\XSharp\\Dev\\XSharp\\Master.sln",
   "Properties": "Configuration,Debug;Platform,Any CPU",
-  "Console":  true
+  "Console": true,
+  "WarningAsError": true,
+  "NewMDFile": false,
+  "MDFile": "C:\\XSharp\\Dev\\Results.md",
+  "Success": "https://img.shields.io/shippable/5444c5ecb904a4b21567b0ff.svg",
+  "Failure": "https://img.shields.io/teamcity/http/teamcity.jetbrains.com/s/bt345.svg"
 }

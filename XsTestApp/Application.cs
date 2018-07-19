@@ -69,9 +69,8 @@ namespace XsTestApp
 
                         finished.WaitOne();
                         // Now generate Result file
-                        if (settingEnv.Vagrant)
-                            this.build_Vagrant(testAssembly);
-                        else
+                        this.build_Vagrant(testAssembly);
+                        if (settingEnv.Details)
                             this.generateMD(testAssembly);
                         // ....
                     }
@@ -79,6 +78,12 @@ namespace XsTestApp
                 }
                 else
                 {
+                    TestData_Vagrant vagrant = new TestData_Vagrant();
+                    vagrant.TestAssembly = Path.GetFileName(testAssembly);
+                    vagrant.Result = "File Not Found";
+                    //
+                    testData_Vagrant.Add(vagrant);
+                    //
                     if (settingEnv.Console)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
@@ -87,8 +92,7 @@ namespace XsTestApp
                     }
                 }
             }
-            if (settingEnv.Vagrant)
-                this.generateMD_Vagrant();
+            this.generateMD_Vagrant();
             finished.Dispose();
         }
 
@@ -144,7 +148,7 @@ namespace XsTestApp
                 testData.Add(new TestData_Link() { TestName = testBad, Result = "![Failed]("+ this.settingEnv.Failed + ")" });
             }
             // Sort by TestName
-            testData.Sort((test1, test2) => test1.TestName.CompareTo(test2.TestName));
+            testData.Sort( (test1, test2) => test1.TestName.CompareTo(test2.TestName));
             // Now, open/create the file
             FileStream md = new FileStream(this.settingEnv.MDFile, FileMode.OpenOrCreate);
             // and write

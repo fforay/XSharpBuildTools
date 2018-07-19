@@ -2,9 +2,9 @@
   "Path": "C:\\XSharp\\DevRT",
   "Assemblies": [ "Binaries\\Debug\\XSharp.Core.Tests.dll", "Binaries\\Debug\\XSharp.Rdd.Tests.dll", "Binaries\\Debug\\XSharp.Runtime.VO.Tests.dll" ],
   "Console": true,
-  "MDFile": "C:\\XSharp\\DevRT\\TestResults.md",
-  "NewMDFile": true,
+  "MDFile": "C:\\XSharp\\Dev\\Results.md",
+  "NewMDFile": false,
   "Passed": "https://img.shields.io/badge/test-passed-green.svg",
   "Failed":  "https://img.shields.io/badge/test-failed-red.svg",
-  "Vagrant": false
+  "Details": true
 }

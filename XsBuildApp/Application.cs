@@ -29,6 +29,14 @@ namespace XsBuildApp
 
         public void Start()
         {
+            if (!File.Exists(this.settingEnv.Project))
+            {
+                if (this.settingEnv.Console)
+                {
+                    Console.WriteLine("Project file not found : {0}.", settingEnv.Project);
+                }
+                return;
+            }
             // Register the Env Variables
             foreach( var keyValue in this.settingEnv.EnvVars)
             {

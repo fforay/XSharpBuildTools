@@ -16,7 +16,7 @@ namespace XsTestApp
 
         public string MDFile { get; set; }
 
-        public bool Vagrant { get; set; }
+        public bool Details { get; set; }
 
         public bool NewMDFile { get; set; }
 

@@ -73,11 +73,11 @@ namespace XsBuildApp
                     warnList = new List<String>();
                     warnList.Add(Warning);
 
-                    Errors.Add(file, warnList);
+                    Warnings.Add(file, warnList);
                 }
                 else
                 {
-                    warnList = Errors[file];
+                    warnList = Warnings[file];
                     warnList.Add(Warning);
                 }
             }
